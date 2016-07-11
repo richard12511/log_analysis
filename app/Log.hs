@@ -18,7 +18,7 @@ data LogMessage = LogMessage { messageType :: MessageType,
   deriving (Show, Eq)
 
 data MessageTree = Leaf
-                 | Node MessageTree LogMessage MessageTree
+                 | Node { left :: MessageTree, logMessage :: LogMessage, right :: MessageTree }
   deriving (Show, Eq)
 
 -- | @testParse p n f@ tests the log file parser @p@ by running it
@@ -38,3 +38,14 @@ testWhatWentWrong :: (String -> [LogMessage])
                   -> IO [String]
 testWhatWentWrong parse whatWentWrong file
   = whatWentWrong . parse <$> readFile file
+
+logMessage2 = LogMessage Info 25 "message 2"
+msgTree2 = Node Leaf logMessage2 Leaf
+
+logMessage1 = LogMessage Info 20 "message 1"
+msgTree1 = Node Leaf logMessage1 msgTree2
+
+logMessage3 = LogMessage Info 26 "message 3"
+
+
+
