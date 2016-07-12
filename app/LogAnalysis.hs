@@ -41,15 +41,26 @@ isAfter (LogMessage _ ts1 _) (LogMessage _ ts2 _) = ts1 > ts2
 
 insert :: LogMessage -> MessageTree -> MessageTree
 insert (Unknown _) msgTree = msgTree
-insert logMessage (Node Leaf nodeMessage Leaf)
-	| logMessage `isAfter` nodeMessage = Node Leaf nodeMessage (Node Leaf logMessage Leaf)
-	| otherwise						   = Node (Node Leaf logMessage Leaf) nodeMessage Leaf
-insert logMessage (Node Leaf nodeMessage rightTree)
-	| logMessage `isAfter` nodeMessage = Node Leaf nodeMessage (insert logMessage rightTree)
-	| otherwise 					   = Node (Node Leaf logMessage Leaf) nodeMessage rightTree
-insert logMessage (Node leftTree nodeMessage Leaf)
-	| logMessage `isAfter` nodeMessage = Node leftTree nodeMessage (Node Leaf logMessage Leaf)
-	| otherwise 					   = Node (insert logMessage leftTree) nodeMessage Leaf
-insert logMessage (Node leftTree nodeMessage rightTree)
-	| logMessage `isAfter` nodeMessage = Node leftTree nodeMessage (insert logMessage rightTree)
-	| otherwise						   = Node (insert logMessage leftTree) nodeMessage rightTree
+insert lm Leaf = Node Leaf lm Leaf
+
+insert lm (Node Leaf nodeMessage Leaf)
+   | lm `isAfter` nodeMessage          = Node Leaf nodeMessage (Node Leaf lm Leaf)
+   | otherwise                         = Node (Node Leaf lm Leaf) nodeMessage Leaf
+
+insert lm (Node Leaf nodeMessage rightTree)
+   | lm `isAfter` nodeMessage = Node Leaf nodeMessage (insert lm rightTree)
+   | otherwise                = Node (Node Leaf lm Leaf) nodeMessage rightTree
+
+insert lm (Node leftTree nodeMessage Leaf)
+   | lm `isAfter` nodeMessage = Node leftTree nodeMessage (Node Leaf lm Leaf)
+   | otherwise                = Node (insert lm leftTree) nodeMessage Leaf
+
+insert lm (Node leftTree nodeMessage rightTree)
+   | lm `isAfter` nodeMessage = Node leftTree nodeMessage (insert lm rightTree)
+   | otherwise                = Node (insert lm leftTree) nodeMessage rightTree
+
+build :: [LogMessage] -> MessageTree
+build [] = Leaf
+build [lm] = insert lm Leaf
+build (x:xs) = insert x (build xs)
+
