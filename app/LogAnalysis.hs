@@ -73,6 +73,10 @@ isError :: MessageType -> Bool
 isError (Error _) = True
 isError _ = False
 
+isSevere :: MessageType -> Bool
+isSevere (Error severity) = severity > 50
+isSevere _ = False
+
 whatWentWrong :: [LogMessage] -> [String]
 whatWentWrong [] = []
-whatWentWrong logs = [message lm | lm <- (inOrder (build logs)), isError (messageType lm)] 
+whatWentWrong logs = [message lm | lm <- (inOrder (build logs)), isError (messageType lm) && isSevere (messageType lm)] 
