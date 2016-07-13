@@ -77,15 +77,23 @@ isSevere :: MessageType -> Bool
 isSevere (Error severity) = severity > 50
 isSevere _ = False
 
-isWarning :: MessageType -> Bool
-isWarning Warning = True
-isWarning _ = False
-
 whatWentWrong :: [LogMessage] -> [String]
 whatWentWrong [] = []
 whatWentWrong logs = [message lm | lm <- (inOrder (build logs)), isError (messageType lm) && isSevere (messageType lm)] 
 
+isWarning :: MessageType -> Bool
+isWarning Warning = True
+isWarning _ = False
+
 extractWarnings :: [LogMessage] -> [String]
 extractWarnings [] = []
 extractWarnings logs = [message lm | lm <- (inOrder (build logs)), isWarning (messageType lm)]
+
+isInfo :: MessageType -> Bool
+isInfo Info = True
+isInfo _ = False
+
+extractInfos :: [LogMessage] -> [String]
+extractInfos [] = []
+extractInfos logs = [message lm | lm <- (inOrder (build logs)), isInfo (messageType lm)]
 
