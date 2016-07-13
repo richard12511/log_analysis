@@ -69,3 +69,10 @@ inOrder Leaf = []
 inOrder (Node Leaf lm Leaf) = [lm]
 inOrder (Node leftTree lm rightTree) = (inOrder leftTree) ++ [lm] ++ (inOrder rightTree) 
 
+isError :: MessageType -> Bool
+isError (Error _) = True
+isError _ = False
+
+whatWentWrong :: [LogMessage] -> [String]
+whatWentWrong [] = []
+whatWentWrong logs = [message lm | lm <- (inOrder (build logs)), isError (messageType lm)] 

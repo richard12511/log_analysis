@@ -47,5 +47,7 @@ msgTree1 = Node Leaf logMessage1 msgTree2
 
 logMessage3 = LogMessage Info 26 "message 3"
 
+logMessage4 = LogMessage (Error 52) 30 "error 1"
+
 
 
