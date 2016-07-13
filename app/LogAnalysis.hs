@@ -27,12 +27,12 @@ parseMessage str
         LogMessage (Error (getErrorCode str)) (getTimeStamp str) (getMessage str)
     | otherwise                 = Unknown str
 
-parse :: String -> [LogMessage]
-parse str = parseMessages (lines str)
-
 parseMessages :: [String] -> [LogMessage]
 parseMessages [] = []
 parseMessages (x:xs) = (parseMessage x): parseMessages xs
+
+parse :: String -> [LogMessage]
+parse str = parseMessages (lines str)
 
 isAfter :: LogMessage -> LogMessage -> Bool
 isAfter (Unknown _) _ = True
@@ -77,6 +77,15 @@ isSevere :: MessageType -> Bool
 isSevere (Error severity) = severity > 50
 isSevere _ = False
 
+isWarning :: MessageType -> Bool
+isWarning Warning = True
+isWarning _ = False
+
 whatWentWrong :: [LogMessage] -> [String]
 whatWentWrong [] = []
 whatWentWrong logs = [message lm | lm <- (inOrder (build logs)), isError (messageType lm) && isSevere (messageType lm)] 
+
+extractWarnings :: [LogMessage] -> [String]
+extractWarnings [] = []
+extractWarnings logs = [message lm | lm <- (inOrder (build logs)), isWarning (messageType lm)]
+
